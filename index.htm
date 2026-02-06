@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вгадай число з друзями</title>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --bg: #0f0c29;
+            --glass: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            transition: transform 0.3s ease;
+        }
+
+        h1 { margin-bottom: 1rem; font-size: 2rem; }
+
+        /* Екран статистики */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Вибір персонажа */
+        .char-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .char-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .char-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+        }
+
+        .char-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            background: #444; /* заглушка якщо фото немає */
+        }
+
+        /* Ігровий екран */
+        .game-screen { display: none; }
+
+        .character-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            margin-bottom: 15px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        input {
+            padding: 12px;
+            width: 80px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover { background: var(--secondary); transform: scale(1.05); }
+
+        .btn-reset {
+            background: #ff4757;
+            font-size: 0.8rem;
+            margin-top: 20px;
+        }
+
+        .message { margin: 20px 0; min-height: 1.5em; font-weight: bold; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="stats">
+        <span>Перемог: <strong id="win-count">0</strong></span>
+        <span>Помилок: <strong id="fail-count">0</strong></span>
+    </div>
+
+    <div id="selection-screen">
+        <h1>Хто загадає число?</h1>
+        <div class="char-grid">
+            <div class="char-card" onclick="startGame('Тіто', 'Tito.png')">
+                <img src="Tito.png" alt="Tito">
+                <div>Тіто</div>
+            </div>
+            <div class="char-card" onclick="startGame('Смартик', 'Smartik.png')">
+                <img src="Smartik.png" alt="Smartik">
+                <div>Смартик</div>
+            </div>
+            <div class="char-card" onclick="startGame('Джуніор', 'Junior.png')">
+                <img src="Junior.png" alt="Junior">
+                <div>Джуніор</div>
+            </div>
+            <div class="char-card" onclick="startGame('Філ', 'Fil.png')">
+                <img src="Fil.png" alt="Fil">
+                <div>Філ</div>
+            </div>
+        </div>
+        <button class="btn-reset" onclick="resetProgress()">Збросити прогрес</button>
+    </div>
+
+    <div id="game-screen" class="game-screen">
+        <img id="active-char-img" src="" class="character-avatar">
+        <h2 id="char-talking">Філ загадав число!</h2>
+        <p>Яке число від 1 до 100 я задумав?</p>
+        
+        <input type="number" id="user-guess" min="1" max="100" placeholder="?">
+        <br>
+        <button onclick="checkGuess()">Перевірити</button>
+        
+        <div class="message" id="game-message"></div>
+        <button id="btn-restart" class="hidden" onclick="showSelection()">Грати знову</button>
+    </div>
+</div>
+
+<script>
+    let secretNumber;
+    let wins = localStorage.getItem('wins') ? parseInt(localStorage.getItem('wins')) : 0;
+    let fails = localStorage.getItem('fails') ? parseInt(localStorage.getItem('fails')) : 0;
+
+    // Оновлення статистики при запуску
+    updateStatsDisplay();
+
+    function updateStatsDisplay() {
+        document.getElementById('win-count').innerText = wins;
+        document.getElementById('fail-count').innerText = fails;
+    }
+
+    function startGame(name, img) {
+        secretNumber = Math.floor(Math.random() * 100) + 1;
+        
+        document.getElementById('selection-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'block';
+        
+        document.getElementById('active-char-img').src = img;
+        document.getElementById('char-talking').innerText = `${name} загадав число!`;
+        document.getElementById('game-message').innerText = "";
+        document.getElementById('user-guess').value = "";
+        document.getElementById('btn-restart').classList.add('hidden');
+    }
+
+    function checkGuess() {
+        const input = document.getElementById('user-guess');
+        const guess = parseInt(input.value);
+        const msg = document.getElementById('game-message');
+
+        if (isNaN(guess) || guess < 1 || guess > 100) {
+            msg.innerText = "Введи число від 1 до 100! 🤔";
+            return;
+        }
+
+        if (guess === secretNumber) {
+            msg.style.color = "#2ecc71";
+            msg.innerText = "Правильно! Ти справжній профі! 🎉";
+            wins++;
+            saveStats();
+            document.getElementById('btn-restart').classList.remove('hidden');
+        } else {
+            fails++;
+            saveStats();
+            msg.style.color = "#ff4757";
+            if (guess < secretNumber) {
+                msg.innerText = "Ні, моє число БІЛЬШЕ! ⬆️";
+            } else {
+                msg.innerText = "Ні, моє число МЕНШЕ! ⬇️";
+            }
+        }
+        updateStatsDisplay();
+    }
+
+    function saveStats() {
+        localStorage.setItem('wins', wins);
+        localStorage.setItem('fails', fails);
+    }
+
+    function resetProgress() {
+        if (confirm("Точно збросити весь прогрес?")) {
+            wins = 0;
+            fails = 0;
+            saveStats();
+            updateStatsDisplay();
+        }
+    }
+
+    function showSelection() {
+        document.getElementById('selection-screen').style.display = 'block';
+        document.getElementById('game-screen').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
