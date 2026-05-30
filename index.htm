@@ -51,12 +51,28 @@
             font-size: 0.9rem;
         }
 
-        /* Вибір персонажа */
+        /* Вибір персонажа з можливістю гортання */
         .char-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 20px;
+            max-height: 320px; /* Обмежуємо висоту для 20+ героїв */
+            overflow-y: auto;  /* Додає вертикальний скрол */
+            padding-right: 5px;
+        }
+
+        /* Стилізація скролбару, щоб він виглядав гарно */
+        .char-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+        .char-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        .char-grid::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .char-card {
@@ -169,6 +185,63 @@
             <div class="char-card" onclick="startGame('Барк', 'Bark.png')">
                 <img src="Bark.png" alt="Bark">
                 <div>Барк</div>
+            </div>
+            <!-- Нові 14 героїв -->
+            <div class="char-card" onclick="startGame('Persik', 'Persik.png')">
+                <img src="Persik.png" alt="Persik">
+                <div>Persik</div>
+            </div>
+            <div class="char-card" onclick="startGame('Spike', 'Spike.png')">
+                <img src="Spike.png" alt="Spike">
+                <div>Spike</div>
+            </div>
+            <div class="char-card" onclick="startGame('Alyonka', 'Alyonka.png')">
+                <img src="Alyonka.png" alt="Alyonka">
+                <div>Alyonka</div>
+            </div>
+            <div class="char-card" onclick="startGame('Lilu', 'Lilu.png')">
+                <img src="Lilu.png" alt="Lilu">
+                <div>Lilu</div>
+            </div>
+            <div class="char-card" onclick="startGame('Manya', 'Manya.png')">
+                <img src="Manya.png" alt="Manya">
+                <div>Manya</div>
+            </div>
+            <div class="char-card" onclick="startGame('Liza', 'Liza.png')">
+                <img src="Liza.png" alt="Liza">
+                <div>Liza</div>
+            </div>
+            <div class="char-card" onclick="startGame('Grivna', 'Grivna.png')">
+                <img src="Grivna.png" alt="Grivna">
+                <div>Grivna</div>
+            </div>
+            <div class="char-card" onclick="startGame('Ben', 'Ben.png')">
+                <img src="Ben.png" alt="Ben">
+                <div>Ben</div>
+            </div>
+            <div class="char-card" onclick="startGame('Goldi', 'Goldi.png')">
+                <img src="Goldi.png" alt="Goldi">
+                <div>Goldi</div>
+            </div>
+            <div class="char-card" onclick="startGame('Raf', 'Raf.png')">
+                <img src="Raf.png" alt="Raf">
+                <div>Raf</div>
+            </div>
+            <div class="char-card" onclick="startGame('Veles', 'Veles.png')">
+                <img src="Veles.png" alt="Veles">
+                <div>Veles</div>
+            </div>
+            <div class="char-card" onclick="startGame('Masha', 'Masha.png')">
+                <img src="Masha.png" alt="Masha">
+                <div>Masha</div>
+            </div>
+            <div class="char-card" onclick="startGame('Brilliantik', 'Brilliantik.png')">
+                <img src="Brilliantik.png" alt="Brilliantik">
+                <div>Brilliantik</div>
+            </div>
+            <div class="char-card" onclick="startGame('Richik', 'Richik.png')">
+                <img src="Richik.png" alt="Richik">
+                <div>Richik</div>
             </div>
         </div>
         <button class="btn-reset" onclick="resetProgress()">Збросити прогрес</button>
