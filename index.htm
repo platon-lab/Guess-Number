@@ -57,7 +57,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-top: 20px;
-            max-height: 320px; /* Обмежуємо висоту для 20+ героїв */
+            max-height: 320px; /* Обмежуємо высоту для 20+ героїв */
             overflow-y: auto;  /* Додає вертикальний скрол */
             padding-right: 5px;
         }
@@ -242,6 +242,15 @@
             <div class="char-card" onclick="startGame('Richik', 'Richik.png')">
                 <img src="Richik.png" alt="Richik">
                 <div>Richik</div>
+            </div>
+            <!-- Ще 2 нових героїв -->
+            <div class="char-card" onclick="startGame('Shunya', 'Shunya.png')">
+                <img src="Shunya.png" alt="Shunya">
+                <div>Shunya</div>
+            </div>
+            <div class="char-card" onclick="startGame('Baks', 'Baks.png')">
+                <img src="Baks.png" alt="Baks">
+                <div>Baks</div>
             </div>
         </div>
         <button class="btn-reset" onclick="resetProgress()">Збросити прогрес</button>
